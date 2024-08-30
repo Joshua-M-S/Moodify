@@ -7,6 +7,8 @@ import SongPlaylist from './Components/SongPlaylist';
 import axios from 'axios';
 import theme from './Themes/Theme';  
 import './App.css';  
+import './App.css';
+import Bubbles from './components/genreSelector';
 
 function App() {
   const [songs, setSongs] = useState([]);
@@ -27,6 +29,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Container maxWidth="md" className="App-container">
+      <Bubbles/>
         <Paper elevation={3} className="App-paper">
           <Typography variant="h4" align="center" gutterBottom>
             Music Recommender
@@ -47,6 +50,9 @@ function App() {
         </Paper>
       </Container>
     </ThemeProvider>
+
+     
+   
   );
 }
 
