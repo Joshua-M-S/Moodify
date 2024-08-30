@@ -1,6 +1,11 @@
+// src/components/Bubbles.js
+
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { useSelectedGenres } from '../context/selectedGenresContext';
+import SelectedGenresModal from './SelectedGenresModal';
 
 // Define an array of genres
 const genres = [
@@ -24,7 +29,6 @@ const Bubble = styled(motion.div)`
   cursor: pointer;
   user-select: none;
   transition: transform 0.3s ease, background-color 0.3s ease;
-  /* Ensure transition applies to the scale transformation */
   transform-origin: center;
 
   &:hover {
@@ -40,31 +44,39 @@ const BubblesContainer = styled.div`
   background-color: #001f3f; // Navy blue background
 `;
 
-const Popup = styled(motion.div)`
+const ButtonContainer = styled.div`
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.8); // Dark overlay
+  top: 20px;
+  right: 20px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 10px;
   z-index: 1000;
-  color: white;
-  font-size: 50px;
-  font-weight: bold;
-  text-align: center;
 `;
 
-const PopupButton = styled.button`
-  margin-top: 20px;
+const ShowGenresButton = styled.button`
   padding: 10px 20px;
   background-color: #007bff;
   border: none;
   color: white;
   border-radius: 5px;
   cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const ProceedButton = styled.button`
+  padding: 10px 20px;
+  background-color: #28a745;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #218838;
+  }
 `;
 
 const vibrantColors = [
@@ -73,10 +85,10 @@ const vibrantColors = [
 ];
 
 const Bubbles = () => {
-  const [selectedGenre, setSelectedGenre] = useState(null);
-  const [showPopup, setShowPopup] = useState(true); // Start with popup shown
-  const [showGenrePopup, setShowGenrePopup] = useState(false); // State for the genre popup
+  const [showModal, setShowModal] = useState(false);
   const [positions, setPositions] = useState([]);
+  const navigate = useNavigate();
+  const { selectedGenres, addGenre, removeGenre } = useSelectedGenres();
 
   useEffect(() => {
     const calculatePositions = () => {
@@ -112,48 +124,32 @@ const Bubbles = () => {
   }, []);
 
   const handleClick = (genre) => {
-    setSelectedGenre(genre);
-    setShowGenrePopup(true); // Show genre popup
+    addGenre(genre); // Add genre to the context
+    navigate(`/sub-genres/${encodeURIComponent(genre)}`); // Navigate to sub-genres page
   };
 
-  const handlePopupClose = () => {
-    setShowPopup(false);
-  };
-
-  const handleGenrePopupClose = () => {
-    setShowGenrePopup(false);
+  const handleDeleteGenre = (genre) => {
+    removeGenre(genre); // Call removeGenre to remove genre from context
   };
 
   return (
     <>
-      {showPopup && (
-        <Popup
-          initial={{ y: 0 }}
-          animate={{ y: '-100vh' }}
-          exit={{ y: '0' }}
-          transition={{ duration: 4, ease: 'easeInOut' }}
-        >
-          <div>
-            <p>Choose Your Genre</p>
-           
-          </div>
-        </Popup>
+      {showModal && (
+        <SelectedGenresModal
+          selectedGenres={selectedGenres}
+          onClose={() => setShowModal(false)}
+          onDelete={handleDeleteGenre}
+        />
       )}
 
-      {showGenrePopup && (
-        <Popup
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          style={{ background: 'rgba(0, 0, 0, 0.8)', color: 'white', fontSize: '36px' }}
-        >
-          <div>
-            <p>You selected: {selectedGenre}</p>
-            <PopupButton onClick={handleGenrePopupClose}>Close</PopupButton>
-          </div>
-        </Popup>
-      )}
+      <ButtonContainer>
+        <ShowGenresButton onClick={() => setShowModal(true)}>
+          Show Selected Genres
+        </ShowGenresButton>
+        <ProceedButton onClick={() => navigate('/home')}>
+          Proceed
+        </ProceedButton>
+      </ButtonContainer>
 
       <BubblesContainer>
         {genres.map((genre, index) => {
