@@ -26,22 +26,49 @@ function WebcamCapture({ onCapture }) {
   };
 
   return (
-    <Box sx={{ textAlign: 'center' }}>
+    <Box
+      sx={{
+        textAlign: 'center',
+        position: 'relative', // Ensure no unintended layout shifts
+        width: '100%',
+        height: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
       {capturedImage ? (
         <img
           src={capturedImage}
           alt="Captured"
-          style={{ borderRadius: '8px', width: '100%', marginBottom: '1rem' }}
+          style={{
+            borderRadius: '8px',
+            width: '100%',
+            maxWidth: '400px', // Max width to avoid stretching
+            marginBottom: '1rem',
+            objectFit: 'cover', // Maintain aspect ratio
+          }}
         />
       ) : (
         <Webcam
           audio={false}
           ref={webcamRef}
           screenshotFormat="image/jpeg"
-          style={{ borderRadius: '8px', width: '100%', marginBottom: '1rem' }}
+          style={{
+            borderRadius: '8px',
+            width: '100%',
+            maxWidth: '400px', // Max width to avoid stretching
+            marginBottom: '1rem',
+            objectFit: 'cover', // Maintain aspect ratio
+          }}
         />
       )}
-      <Button variant="contained" color="primary" onClick={capturedImage ? retake : capture}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={capturedImage ? retake : capture}
+        sx={{ marginTop: '1rem' }}
+      >
         {capturedImage ? 'Retake Photo' : 'Capture Photo'}
       </Button>
     </Box>
