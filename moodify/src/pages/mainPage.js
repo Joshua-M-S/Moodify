@@ -38,6 +38,8 @@ const MainPage = () => {
   const [processedImage, setProcessedImage] = useState(null);
   const [predictedEmotion, setPredictedEmotion] = useState('');  // State for predicted emotion
   const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar
+  const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackbar message
+  const [snackbarSeverity, setSnackbarSeverity] = useState('info'); // State for Snackbar severity
   const { selectedGenres } = useSelectedGenres();
   const navigate = useNavigate();
 
@@ -57,15 +59,34 @@ const MainPage = () => {
         body: formData,
         credentials: 'include' // Send FormData
       });
+
+      if (!response.ok) {
+        // Handle error response
+        if (response.status === 500) {
+          setSnackbarMessage('Your image could not be processed. Please retake and ensure you have adequate mild lighting and you are facing the camera.');
+          setSnackbarSeverity('error');
+        } else {
+          setSnackbarMessage('Your image could not be processed. Please retake and ensure you have adequate mild lighting and you are facing the camera');
+          setSnackbarSeverity('error');
+        }
+        setSnackbarOpen(true);
+        return;
+      }
+
       const data = await response.json();
       console.log('API Response:', data);
   
       // Handle the response
       setSongs(data['Recommended Playlist']);
       setPredictedEmotion(data['Predicted Emotion']); // Access predictedEmotion from payload
+      setSnackbarMessage(`You are feeling: ${data['Predicted Emotion']}. Here are some tracks to match your vibe!`);
+      setSnackbarSeverity('success');
       setSnackbarOpen(true); // Show Snackbar after setting emotion
     } catch (error) {
       console.error('Error submitting data:', error);
+      setSnackbarMessage('Your image could not be processed. Please retake and ensure you have adequate mild lighting and you are facing the camera.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     }
   };
 
@@ -143,7 +164,7 @@ const MainPage = () => {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        message={`You are feeling: ${predictedEmotion}. Here are some tracks to match your vibe!`}
+        message={snackbarMessage}
         action={
           <Button color="inherit" onClick={handleCloseSnackbar}>
             Close
