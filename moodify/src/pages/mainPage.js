@@ -1,46 +1,59 @@
 import React, { useState } from 'react';
-import { Container, Grid2, Paper, Typography, Box } from '@mui/material';
+import { Container, Paper, Typography, Box, Button } from '@mui/material';
 import WebcamCapture from '../Components/CameraCapture';  // Adjust the import path if needed
-import TextCapture from '../Components/TextCapture';      // Adjust the import path if needed
 import SongPlaylist from '../Components/SongPlaylist';    // Adjust the import path if needed
 import axios from 'axios';
-
+import { useSelectedGenres } from '../context/selectedGenresContext';
 
 const MainPage = () => {
   const [songs, setSongs] = useState([]);
-  const [capturedImage, setCapturedImage] = useState(null);
+  const [processedImage, setProcessedImage] = useState(null);
+  const { selectedGenres } = useSelectedGenres();
 
-  const handleTextSubmit = async (inputData) => {
+  const handleSubmit = async () => {
+    if (!processedImage || selectedGenres.length === 0) {
+      console.error('Image or genres missing.');
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append('picture', processedImage); // Append file
+    formData.append('genre', JSON.stringify(selectedGenres)); // Append genres
+  
     try {
-      const response = await axios.post('http://localhost:5000/submit', {
-        input: inputData,
-        image: capturedImage,
+      const response = await fetch('http://localhost:5000/Moodify/getCustomPlaylist', {
+        method: 'POST',
+        body: formData, // Send FormData
       });
-      setSongs(response.data.songs); // Assuming the response contains a 'songs' array
+      const data = await response.json();
+      console.log('API Response:', data);
+  
+      // Handle the response
+      setSongs(data['Recommended Playlist']);
     } catch (error) {
       console.error('Error submitting data:', error);
     }
   };
-
+  
   return (
     <Container maxWidth="md" className="App-container">
       <Paper elevation={3} className="App-paper">
         <Typography variant="h4" align="center" gutterBottom>
           Music Recommender
         </Typography>
-        <Grid2 container spacing={4} alignItems="center" justifyContent="center">
-          <Grid2 item xs={12} md={6}>
-            <Box className="Webcam-box">
-              <WebcamCapture onCapture={setCapturedImage} />
-            </Box>
-          </Grid2>
-          <Grid2 item xs={12} md={6}>
-            <TextCapture onSubmit={handleTextSubmit} />
-          </Grid2>
-          <Grid2 item xs={12}>
-            <SongPlaylist songs={songs} />
-          </Grid2>
-        </Grid2>
+        <Box className="Webcam-box">
+          <WebcamCapture onCapture={setProcessedImage} />
+        </Box>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          disabled={!processedImage || selectedGenres.length === 0}
+          fullWidth
+        >
+          Generate Playlist
+        </Button>
+        <SongPlaylist songs={songs} />
       </Paper>
     </Container>
   );

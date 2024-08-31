@@ -1,24 +1,23 @@
-// src/SongPlaylist.js
 import React from 'react';
-import { List, ListItem, ListItemText, Container, Typography, Paper } from '@mui/material';
+import { List, ListItem, ListItemText } from '@mui/material';
 
-function SongPlaylist({ songs }) {
+const SongPlaylist = ({ songs }) => {
+  // Default to an empty array if songs is undefined or not an array
+  const playlist = Array.isArray(songs) ? songs : [];
+
   return (
-    <Container>
-      <Paper elevation={3} sx={{ padding: '1rem', marginTop: '2rem' }}>
-        <Typography variant="h6" gutterBottom>
-          Your Playlist
-        </Typography>
-        <List>
-          {songs.map((song, index) => (
-            <ListItem key={index}>
-              <ListItemText primary={song} />
-            </ListItem>
-          ))}
-        </List>
-      </Paper>
-    </Container>
+    <List>
+      {playlist.length > 0 ? (
+        playlist.map((song, index) => (
+          <ListItem key={index}>
+            <ListItemText primary={song.title} secondary={song.artist} />
+          </ListItem>
+        ))
+      ) : (
+        <ListItem>No songs available</ListItem>
+      )}
+    </List>
   );
-}
+};
 
 export default SongPlaylist;

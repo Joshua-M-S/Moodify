@@ -1,4 +1,3 @@
-// src/Components/CameraCapture.js
 import React, { useRef } from 'react';
 import Webcam from 'react-webcam';
 import { Button, Box } from '@mui/material';
@@ -8,8 +7,15 @@ function WebcamCapture({ onCapture }) {
 
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
-    if (onCapture) {
-      onCapture(imageSrc); // Pass the captured image to the parent component
+    if (imageSrc) {
+      fetch(imageSrc)
+        .then(res => res.blob())
+        .then(blob => {
+          const file = new File([blob], 'captured_image.jpg', { type: 'image/jpeg' });
+          if (onCapture) {
+            onCapture(file); // Pass the file object to the parent component
+          }
+        });
     }
   };
 

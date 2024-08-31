@@ -15,56 +15,78 @@ const Bubble = styled(motion.div)`
   border-radius: 50%;
   background-color: #000;
   color: #fff;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   cursor: pointer;
   user-select: none;
   transition: transform 0.3s ease, background-color 0.3s ease;
   transform-origin: center;
-  padding: 10px;
-  box-sizing: border-box;
+  text-align: center;
+  padding: 5px;
 
   &:hover {
-    transform: scale(1.3);
+    transform: scale(1.2);
   }
 `;
 
 const BubblesContainer = styled.div`
   position: relative;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
-  overflow: auto;
+  overflow: hidden;
   background-color: #001f3f;
-  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+
+const ButtonContainer = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+  background-color: rgba(0, 31, 63, 0.8);
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const BackLink = styled.a`
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  color: #fff;
-  font-size: 18px;
-  text-decoration: none;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 10px;
+   padding: 10px 20px;
+  border: 2px solid #ADD8E6;
+  background-color: #001f3f;
+  color: white;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s, border-color 0.3s;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.8);
+    background-color: #003366;
+    border-color: #87CEFA;
   }
 `;
 
 const ShowGenresButton = styled.button`
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  color: #fff;
-  font-size: 18px;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 10px;
+  padding: 10px 20px;
+  border: 2px solid #ADD8E6;
+  background-color: #001f3f;
+  color: white;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s, border-color 0.3s;
+
+  &:hover {
+    background-color: #003366;
+    border-color: #87CEFA;
+  }
 `;
 
 const Popup = styled.div`
@@ -90,6 +112,7 @@ const SubGenres = () => {
   const navigate = useNavigate();
   const { selectedGenres, addGenre, removeGenre } = useSelectedGenres();
 
+  
   useEffect(() => {
     const fetchSubGenres = async () => {
       try {
@@ -113,9 +136,8 @@ const SubGenres = () => {
     fetchSubGenres();
   }, [genre]);
 
-  const bubbleSize = 250;
+  const bubbleSize = 150; // Adjust to match the size in the Genre component
   const padding = 20;
-  const buttonHeight = 50;
 
   const handleBubbleClick = (subGenre) => {
     addGenre(subGenre);
@@ -143,18 +165,21 @@ const SubGenres = () => {
       <Popup visible={popupVisible}>{popupMessage}</Popup>
 
       <BubblesContainer>
-        <ShowGenresButton onClick={() => setShowModal(true)}>
-          Show Selected Genres
-        </ShowGenresButton>
-        <BackLink role="button" aria-label="Back to Main Genres" onClick={() => navigate('/')}>
-          Back to Main Genres
-        </BackLink>
+        <ButtonContainer>
+          <BackLink role="button" aria-label="Back to Main Genres" onClick={() => navigate('/')}>
+            Back to Main Genres
+          </BackLink>
+          <ShowGenresButton onClick={() => setShowModal(true)}>
+            Show Selected Genres
+          </ShowGenresButton>
+        </ButtonContainer>
+
         {subGenres.map((subGenre, index) => {
           const numCols = Math.floor(window.innerWidth / (bubbleSize + padding));
           const row = Math.floor(index / numCols);
           const col = index % numCols;
           const x = col * (bubbleSize + padding);
-          const y = row * (bubbleSize + padding) + buttonHeight + 30;
+          const y = row * (bubbleSize + padding) + 100; // Adjust Y to leave space for buttons
 
           const isSelected = selectedGenres.includes(subGenre);
           const color = isSelected ? '#FF5733' : `#${Math.floor(Math.random() * 16777215).toString(16)}`;
