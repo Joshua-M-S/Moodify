@@ -91,9 +91,8 @@ const ShowGenresButton = styled.button`
 
 const Popup = styled.div`
   position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 20px;  // Adjust the distance from the top
+  left: 20px; // Adjust the distance from the left
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
   padding: 15px;
@@ -102,6 +101,7 @@ const Popup = styled.div`
   z-index: 1000;
   display: ${({ visible }) => (visible ? 'block' : 'none')};
 `;
+
 
 const SubGenres = () => {
   const [subGenres, setSubGenres] = useState([]);
