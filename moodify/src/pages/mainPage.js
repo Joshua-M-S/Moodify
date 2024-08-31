@@ -18,12 +18,13 @@ const MainPage = () => {
   
     const formData = new FormData();
     formData.append('picture', processedImage); // Append file
-    formData.append('genre', JSON.stringify(selectedGenres)); // Append genres
+    formData.append('genre', selectedGenres); // Append genres
   
     try {
-      const response = await fetch('http://localhost:5000/Moodify/getCustomPlaylist', {
+      const response = await fetch('https://127.0.0.1:5000/Moodify/getCustomPlaylist', {
         method: 'POST',
-        body: formData, // Send FormData
+        body: formData,
+        credentials: 'include' // Send FormData
       });
       const data = await response.json();
       console.log('API Response:', data);
